@@ -1,0 +1,16 @@
+# Ignore virtual environment
+env/
+
+# Ignore Python bytecode files
+__pycache__/
+
+# Ignore database files
+*.sqlite3
+
+# Ignore Django migrations
+weather/migrations/
+
+# Ignore logs and temporary files
+*.log
+*.pot
+*.pyc

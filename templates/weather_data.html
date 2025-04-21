@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather Data Viewer</title>
+  <style>
+    body { font-family: Arial; margin: 2rem; }
+    select, button { padding: 0.5rem; margin: 0.5rem 0; }
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h2>Filter Weather Data</h2>
+
+  <form id="filter-form">
+    <label for="year">Year:</label>
+    <select id="year" name="year">
+      <option value="">All</option>
+      {% for year in years %}
+        <option value="{{ year }}">{{ year }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="region">Region:</label>
+    <select id="region" name="region">
+      <option value="">All</option>
+      {% for region in regions %}
+        <option value="{{ region }}">{{ region }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="parameter">Parameter:</label>
+    <select id="parameter" name="parameter">
+      <option value="">All</option>
+      {% for param in parameters %}
+        <option value="{{ param }}">{{ param }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Apply Filter</button>
+  </form>
+
+  <h3>Results</h3>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Region</th>
+        <th>Parameter</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('filter-form');
+    const tbody = document.querySelector('#data-table tbody');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const year = document.getElementById('year').value;
+      const region = document.getElementById('region').value;
+      const parameter = document.getElementById('parameter').value;
+
+      let query = [];
+      if (year) query.push(`date__year=${year}`);
+      if (region) query.push(`region=${region}`);
+      if (parameter) query.push(`parameter=${parameter}`);
+
+      const url = `/api/weather/data/?${query.join('&')}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        const row = `<tr>
+          <td>${item.date}</td>
+          <td>${item.region}</td>
+          <td>${item.parameter}</td>
+          <td>${item.value}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    });
+  </script>
+</body>
+</html>
